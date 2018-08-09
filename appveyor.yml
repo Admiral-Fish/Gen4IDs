@@ -21,7 +21,6 @@ environment:
           OS: linux
 
 install:
-    - git submodule update --init --recursive
     # Windows
     - cmd: set PATH=%QTDIR%\bin;%PATH%
     - cmd: if "%BUILDER%"=="MINGW" set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
