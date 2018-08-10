@@ -24,3 +24,4 @@ deploy:
   file: Gen4IDs-macOS.zip
   on:
     repo: Admiral-Fish/Gen4IDs
+    tags: true
