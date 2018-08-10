@@ -22,6 +22,6 @@ deploy:
   api_key:
     secure: bgAoKW6rgdT7HNTTEE+Q1fbmp+p40G4688EDZztM7jI+lKnfUB47eUekau0otyS2Y/Nk2VHX4gaPSu8WNnhpmAwZPzDsnBXWTw7fijt3Z6pfAwPqxVWAeD9xqP5ShLa/hJ/L02tMV4tgfQQDiPcfJrxd9O2TB6SbYiw+ql6ez09ZK8k3PzrhMybpPLE0qu8VsDgg75RM6vUSohEE0SPdNO6MIPSTVOqOAwyRBUzsMmDRn9O8QwKk/spE4gvvApYAnpYJ1x3Lyo1GhVDSvj5AphOG7q2zrugTarEavDDhWbaaGFErmsUdmrkFPdLQ/wWiaowBEnm4DzfpaxztmGZeNJTsX60xdqiY1DnFQRguWWC654/WMGCoCCPl0MV4xZhDSlOCrfP1tve4diRpG2mlqy/McFmB58O2cc0yCrAP+KfZiztxXAFfK2rsu2BYVE5SjF2rq3d1xj4Mo6e2FywGJhXMxSLTxTfloYXEMxRvkaL0FJPlv8zMUt+7uNA6QHtAKOHTN398qsxJzXUpPYBeLpz6Mree/QPI++ilgnDDjawYea7PLB+IbVmFb8QR69oYW4b15RrO++K7FSx8dWu222jLW/SEBaeZlWu7ol8GtStPTy6uRY6i01l0KQdAza8JFnBcyd8NG+P4EWZ27YnzfScEArnSMU+7BeA0LCwY6x8=
   file: Gen4IDs-macOS.zip
+  skip_cleanup: true
   on:
-    repo: Admiral-Fish/Gen4IDs
     tags: true
