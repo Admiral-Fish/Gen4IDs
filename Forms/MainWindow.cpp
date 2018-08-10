@@ -54,7 +54,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateSearch()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     while (thread->getIsSearching() && !thread->getCancel())
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -90,12 +89,25 @@ void MainWindow::on_pushButtonSearch_clicked()
     {
         model->removeRows(0, model->rowCount());
 
-        thread->setInfinite(ui->checkBoxInfiniteSearch->isChecked());
-        thread->setTID(ui->textBoxTID->text().toUInt());
-        thread->setSID(ui->textBoxSID->text().toUInt());
-        thread->setMinDelay(ui->textBoxMinDelay->text().toUInt());
-        thread->setMaxDelay(ui->textBoxMaxDelay->text().toUInt());
+        bool flag = ui->checkBoxInfiniteSearch->isChecked();
+        quint32 tid = ui->textBoxTID->text().toUInt();
+        quint32 sid = ui->textBoxSID->text().toUInt();
+        quint32 minDelay = ui->textBoxMinDelay->text().toUInt();
+        quint32 maxDelay = ui->textBoxMaxDelay->text().toUInt();
 
+        if (!flag && (minDelay > maxDelay))
+        {
+            QMessageBox error;
+            error.setText("Enter a min delay lower then the max delay.");
+            error.exec();
+            return;
+        }
+
+        thread->setInfinite(flag);
+        thread->setTID(tid);
+        thread->setSID(sid);
+        thread->setMinDelay(minDelay);
+        thread->setMaxDelay(maxDelay);
         thread->start();
 
         std::thread update(&MainWindow::updateSearch, this);

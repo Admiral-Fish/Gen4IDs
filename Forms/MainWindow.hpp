@@ -25,6 +25,7 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QSettings>
+#include <QMessageBox>
 #include <thread>
 #include <Core/IDSearcher.hpp>
 

@@ -34,7 +34,7 @@ void IDSearcher::run()
     if (infinite)
         maxResults = 0x100000000;
     else
-        maxResults = 256 * 24 * (maxDelay - minDelay + 1);
+        maxResults = 256 * 24 * (maxDelay - minDelay);
 
     quint32 hour = infinite ? 256 : 24;
     quint32 delay = infinite ? 0x10000 : maxDelay;
