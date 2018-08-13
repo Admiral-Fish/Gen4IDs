@@ -1,5 +1,5 @@
 /*
- * This file is part of gen4ids
+ * This file is part of Gen4IDs
  * Copyright (C) 2018 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
@@ -30,23 +30,70 @@ void QTextBox::onTextChanged(QString string)
     {
         string = string.toUpper();
         string.remove(filter);
-        u64 temp = string.toULongLong(nullptr, base);
+        quint64 temp = string.toULongLong(nullptr, base);
 
         if (temp > maxValue)
             string = QString::number(maxValue, base);
         if (temp < minValue)
             string = QString::number(minValue, base);
 
+        int position = cursorPosition();
         setText(string);
+        setCursorPosition(position);
     }
 }
 
-void QTextBox::setValues(u64 min, u64 shift, bool isDecimal)
+// Differnt presets for different types of input
+void QTextBox::setValues(InputType type)
 {
-    maxValue = 0xFFFFFFFFFFFFFFFF >> shift;
-    minValue = min;
-    base = isDecimal ? 10 : 16;
-    filter = QRegExp(isDecimal ? "[^0-9]" : "[^0-9A-F]");
+    switch (type)
+    {
+        case InputType::Seed64Bit:
+            minValue = 0;
+            maxValue = 0xffffffffffffffff;
+            base = 16;
+            break;
+        case InputType::Frame64Bit:
+            minValue = 1;
+            maxValue = 0xffffffffffffffff;
+            base = 10;
+            break;
+        case InputType::Seed32Bit:
+            minValue = 0;
+            maxValue = 0xffffffff;
+            base = 16;
+            break;
+        case InputType::Frame32Bit:
+            minValue = 1;
+            maxValue = 0xffffffff;
+            base = 10;
+            break;
+        case InputType::Seed16Bit:
+            minValue = 0;
+            maxValue = 0xffff;
+            base = 16;
+            break;
+        case InputType::Delay:
+            minValue = 0;
+            maxValue = 0xffffffff;
+            base = 10;
+            break;
+        case InputType::TIDSID:
+            minValue = 0;
+            maxValue = 0xffff;
+            base = 10;
+            break;
+    }
+
+    filter = QRegExp(base == 10 ? "[^0-9]" : "[^0-9A-F]");
+}
+
+void QTextBox::setValues(quint64 minValue, quint64 maxValue, int base)
+{
+    this->minValue = minValue;
+    this->maxValue = maxValue;
+    this->base = base;
+    filter = QRegExp(base == 10 ? "[^0-9]" : "[^0-9A-F]");
 }
 
 void QTextBox::setFilter(QString string)
@@ -54,7 +101,7 @@ void QTextBox::setFilter(QString string)
     filter = QRegExp(string);
 }
 
-void QTextBox::setValue(u64 value)
+void QTextBox::setValue(quint64 value)
 {
     maxValue = value;
 }

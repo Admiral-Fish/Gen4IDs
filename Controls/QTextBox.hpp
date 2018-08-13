@@ -1,5 +1,5 @@
 /*
- * This file is part of gen4ids
+ * This file is part of Gen4IDs
  * Copyright (C) 2018 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
@@ -22,16 +22,24 @@
 
 #include <QLineEdit>
 
-typedef uint64_t u64;
-typedef uint32_t u32;
+enum InputType
+{
+    Seed64Bit,
+    Frame64Bit,
+    Seed32Bit,
+    Frame32Bit,
+    Seed16Bit,
+    Delay,
+    TIDSID
+};
 
 class QTextBox : public QLineEdit
 {
     Q_OBJECT
 
 private:
-    u64 maxValue = 0;
-    u64 minValue;
+    quint64 maxValue = 0;
+    quint64 minValue;
     int base;
     QRegExp filter;
 
@@ -40,9 +48,10 @@ private slots:
 
 public:
     QTextBox(QWidget *parent = nullptr);
-    void setValues(u64 min, u64 shift, bool isDecimal);
+    void setValues(InputType type);
+    void setValues(quint64 minValue, quint64 maxValue, int base = 10);
     void setFilter(QString string);
-    void setValue(u64 value);
+    void setValue(quint64 value);
     void setBase(int base);
 
 };

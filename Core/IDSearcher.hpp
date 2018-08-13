@@ -1,5 +1,5 @@
 /*
- * This file is part of gen4ids
+ * This file is part of Gen4IDs
  * Copyright (C) 2018 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
