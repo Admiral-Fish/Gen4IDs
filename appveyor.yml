@@ -1,5 +1,3 @@
-version: 2.0.0.{build}
-
 environment:
     matrix:
         # Windows 64-bit
@@ -26,8 +24,8 @@ install:
     - cmd: if "%BUILDER%"=="MINGW" set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
     - cmd: if "%BUILDER%"=="NMAKE" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
     # Linux
-    - sh: sudo apt-get -qq update
-    - sh: sudo apt-get install -y build-essential qtbase5-dev qt5-qmake qt5-default
+    - sh: sudo service docker start
+    - sh: docker build . -t gen4ids-ci
     
 build_script:
     - qmake Gen4IDs.pro
@@ -35,7 +33,8 @@ build_script:
     - cmd: if "%BUILDER%"=="MINGW" mingw32-make
     - cmd: if "%BUILDER%"=="NMAKE" nmake
     # Linux
-    - sh: make
+    - sh: docker run -w="/app" -v "$(pwd)":/app gen4ids-ci qmake
+    - sh: docker run -w="/app" -v "$(pwd)":/app gen4ids-ci make
 
 after_build:
     # Windows
