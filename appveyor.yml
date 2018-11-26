@@ -6,17 +6,17 @@ environment:
           BUILDER: NMAKE
           ARCH: x64
           OS: windows
+        # Linux
+        - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+          BUILDER: MAKE
+          ARCH: x64
+          OS: linux
         # Windows 32-Bit
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           QTDIR: C:\Qt\5.11\mingw53_32
           BUILDER: MINGW
           ARCH: x86
           OS: windows
-        # Linux
-        - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-          BUILDER: MAKE
-          ARCH: x64
-          OS: linux
 
 install:
     # Windows
@@ -27,8 +27,8 @@ install:
     - sh: sudo service docker start
     
 build_script:
-    - qmake Gen4IDs.pro
     # Windows
+    - cmd: qmake Gen4IDs.pro
     - cmd: if "%BUILDER%"=="MINGW" mingw32-make
     - cmd: if "%BUILDER%"=="NMAKE" nmake
     # Linux
