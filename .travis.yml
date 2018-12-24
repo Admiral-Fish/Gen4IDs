@@ -2,20 +2,20 @@ language: cpp
 
 matrix:
   include:
-  - os: osx
+    - os: osx
   
 install:
-- brew update
-- brew install qt5
-- brew link --force qt5
+  - brew update
+  - brew install qt5
+  - brew link --force qt5
 
 script:
-- qmake Gen4IDs.pro
-- make
+  - qmake Gen4IDs.pro
+  - make -j 4
 
 before_deploy:
-- "/usr/local/Cellar/qt/5.11.1/bin/macdeployqt Gen4IDs.app -dmg -verbose=2"
-- zip -r Gen4IDs-macOS.zip Gen4IDs.dmg
+  - /usr/local/Cellar/qt/5.12.0/bin/macdeployqt Gen4IDs.app -dmg -verbose=2
+  - zip -r Gen4IDs-macOS.zip Gen4IDs.dmg
 
 deploy:
   provider: releases

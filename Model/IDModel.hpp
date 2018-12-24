@@ -17,43 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef QTEXTBOX_HPP
-#define QTEXTBOX_HPP
+#ifndef IDMODEL_HPP
+#define IDMODEL_HPP
 
-#include <QLineEdit>
+#include <QAbstractTableModel>
+#include <Core/IDResult.hpp>
 
-enum InputType
-{
-    Seed64Bit,
-    Frame64Bit,
-    Seed32Bit,
-    Frame32Bit,
-    Seed16Bit,
-    Delay,
-    TIDSID
-};
-
-class QTextBox : public QLineEdit
+class IDModel : public QAbstractTableModel
 {
     Q_OBJECT
 
-private:
-    quint64 maxValue = 0;
-    quint64 minValue;
-    int base;
-    QRegExp filter;
-
-private slots:
-    void onTextChanged(QString string);
-
 public:
-    QTextBox(QWidget *parent = nullptr);
-    void setValues(InputType type);
-    void setValues(quint64 minValue, quint64 maxValue, int base = 10);
-    void setFilter(QString string);
-    void setValue(quint64 value);
-    void setBase(int base);
+    explicit IDModel(QObject *parent = nullptr);
+    void addItems(const QVector<IDResult> &frames);
+    void clear();
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+private:
+    QVector<IDResult> model;
 
 };
 
-#endif // QTEXTBOX_HPP
+#endif // IDMODEL_HPP

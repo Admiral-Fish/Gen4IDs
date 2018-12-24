@@ -25,120 +25,86 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    model = new QStandardItemModel(this);
-    thread = new IDSearcher();
+    model = new IDModel(this);
 
-    ui->textBoxTID->setValues(InputType::TIDSID);
-    ui->textBoxSID->setValues(InputType::TIDSID);
     ui->textBoxMinDelay->setValues(InputType::Delay);
     ui->textBoxMaxDelay->setValues(InputType::Delay);
 
-    model->setHorizontalHeaderLabels(QStringList() << "Seed" << "TID" << "SID");
     ui->tableView->setModel(model);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    connect(this, &MainWindow::updateProgress, this, &MainWindow::updateProgressBar);
-    connect(thread, &IDSearcher::result, this, &MainWindow::addResult);
-
-    loadSettings();
+    QSettings setting;
+    if (setting.contains("minDelay")) ui->textBoxMinDelay->setText(setting.value("minDelay").toString());
+    if (setting.contains("maxDelay")) ui->textBoxMaxDelay->setText(setting.value("maxDelay").toString());
+    if (setting.contains("tid")) ui->textEditTID->setText(setting.value("tid").toString());
+    if (setting.contains("sid")) ui->textEditSID->setText(setting.value("sid").toString());
 }
 
 MainWindow::~MainWindow()
 {
-    saveSettings();
+    QSettings setting;
+    setting.setValue("minDelay", ui->textBoxMinDelay->text());
+    setting.setValue("maxDelay", ui->textBoxMaxDelay->text());
+    setting.setValue("tid", ui->textEditTID->toPlainText());
+    setting.setValue("sid", ui->textEditSID->toPlainText());
 
     delete ui;
     delete model;
-    delete thread;
 }
 
-void MainWindow::updateSearch()
+void MainWindow::updateView(const QVector<IDResult> &frames, int progress)
 {
-    while (thread->getIsSearching() && !thread->getCancel())
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        emit updateProgress();
-    }
-}
-
-void MainWindow::loadSettings()
-{
-    QSettings setting;
-
-    if (setting.contains("minDelay")) ui->textBoxMinDelay->setText(setting.value("minDelay").toString());
-    if (setting.contains("maxDelay")) ui->textBoxMaxDelay->setText(setting.value("maxDelay").toString());
-    if (setting.contains("tid")) ui->textBoxTID->setText(setting.value("tid").toString());
-    if (setting.contains("sid")) ui->textBoxSID->setText(setting.value("sid").toString());
-    if (setting.contains("infinite")) ui->checkBoxInfiniteSearch->setChecked(setting.value("infinite").toBool());
-}
-
-void MainWindow::saveSettings()
-{
-    QSettings setting;
-
-    setting.setValue("minDelay", ui->textBoxMinDelay->text());
-    setting.setValue("maxDelay", ui->textBoxMaxDelay->text());
-    setting.setValue("tid", ui->textBoxTID->text());
-    setting.setValue("sid", ui->textBoxSID->text());
-    setting.setValue("infinite", ui->checkBoxInfiniteSearch->isChecked());
+    model->addItems(frames);
+    ui->progressBar->setValue(progress);
 }
 
 void MainWindow::on_pushButtonSearch_clicked()
 {
-    if (!thread->getIsSearching())
+    model->clear();
+    ui->pushButtonSearch->setEnabled(false);
+    ui->pushButtonCancel->setEnabled(true);
+
+    bool flag = ui->checkBoxInfiniteSearch->isChecked();
+    QStringList tid = ui->textEditTID->toPlainText().split("\n");
+    QStringList sid = ui->textEditSID->toPlainText().split("\n");
+    quint32 minDelay = ui->textBoxMinDelay->text().toUInt();
+    quint32 maxDelay = ui->textBoxMaxDelay->text().toUInt();
+
+    QVector<quint16> tidFilter;
+    for (const auto &str : tid)
     {
-        model->removeRows(0, model->rowCount());
-
-        bool flag = ui->checkBoxInfiniteSearch->isChecked();
-        quint32 tid = ui->textBoxTID->text().toUInt();
-        quint32 sid = ui->textBoxSID->text().toUInt();
-        quint32 minDelay = ui->textBoxMinDelay->text().toUInt();
-        quint32 maxDelay = ui->textBoxMaxDelay->text().toUInt();
-
-        if (!flag && (minDelay > maxDelay))
-        {
-            QMessageBox error;
-            error.setText("Enter a min delay lower then the max delay.");
-            error.exec();
-            return;
-        }
-
-        thread->setInfinite(flag);
-        thread->setTID(tid);
-        thread->setSID(sid);
-        thread->setMinDelay(minDelay);
-        thread->setMaxDelay(maxDelay);
-        thread->start();
-
-        std::thread update(&MainWindow::updateSearch, this);
-        update.detach();
+        tidFilter.append(str.toUShort());
     }
-}
 
-void MainWindow::on_pushButtonCancel_clicked()
-{
-    if (thread->getIsSearching())
-        thread->setCancel(true);
-}
+    QVector<quint16> sidFilter;
+    for (const auto &str : sid)
+    {
+        sidFilter.append(str.toUShort());
+    }
 
-void MainWindow::on_checkBoxInfiniteSearch_toggled(bool checked)
-{
-    ui->labelMinDelay->setEnabled(!checked);
-    ui->labelMaxDelay->setEnabled(!checked);
-    ui->textBoxMinDelay->setEnabled(!checked);
-    ui->textBoxMaxDelay->setEnabled(!checked);
-}
+    if (!flag && (minDelay > maxDelay))
+    {
+        QMessageBox error;
+        error.setText("Enter a min delay lower then the max delay.");
+        error.exec();
+        return;
+    }
 
-void MainWindow::updateProgressBar()
-{
-    ui->progressBar->setValue(thread->calcProgress());
-}
+    quint64 maxProgress;
+    maxProgress = flag ? 0x100000000 : 256 * 24 * (maxDelay - minDelay);
 
-void MainWindow::addResult(quint32 seed, quint32 id)
-{
-    QList<QStandardItem *> result;
-    result << new QStandardItem(QString::number(seed, 16).toUpper());
-    result << new QStandardItem(QString::number(id & 0xFFFF));
-    result << new QStandardItem(QString::number(id >> 16));
-    model->appendRow(result);
+    ui->progressBar->setValue(0);
+
+    auto *search = new IDSearcher(tidFilter, sidFilter, minDelay, maxDelay, flag, maxProgress);
+    auto *timer = new QTimer();
+
+    connect(search, &IDSearcher::finished, timer, &QTimer::deleteLater);
+    connect(search, &IDSearcher::finished, timer, &QTimer::stop);
+    connect(search, &IDSearcher::finished, this, [ = ] { ui->pushButtonSearch->setEnabled(true); ui->pushButtonCancel->setEnabled(false); });
+    connect(search, &IDSearcher::finished, this, [ = ] { updateView(search->getResults(), search->currentProgress()); });
+    connect(timer, &QTimer::timeout, this, [ = ] { updateView(search->getResults(), search->currentProgress()); });
+    connect(ui->pushButtonCancel, &QPushButton::clicked, search, &IDSearcher::cancelSearch);
+
+    search->start();
+    timer->start(1000);
 }

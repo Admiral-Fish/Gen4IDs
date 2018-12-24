@@ -21,15 +21,11 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
-#include <QList>
-#include <QStandardItemModel>
-#include <QStandardItem>
 #include <QSettings>
 #include <QMessageBox>
-#include <thread>
+#include <QTimer>
 #include <Core/IDSearcher.hpp>
-
-typedef uint32_t u32;
+#include <Model/IDModel.hpp>
 
 namespace Ui
 {
@@ -40,28 +36,18 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-signals:
-    void updateProgress();
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 private:
     Ui::MainWindow *ui;
-    QStandardItemModel *model;
-    IDSearcher *thread;
+    IDModel *model;
 
-    void updateSearch();
-    void loadSettings();
-    void saveSettings();
+    void updateView(const QVector<IDResult> &frames, int progress);
 
 private slots:
     void on_pushButtonSearch_clicked();
-    void on_pushButtonCancel_clicked();
-    void on_checkBoxInfiniteSearch_toggled(bool checked);
-    void updateProgressBar();
-    void addResult(quint32 seed, quint32 id);
-
-public:
-    explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
 
 };
 

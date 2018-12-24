@@ -20,41 +20,39 @@
 #ifndef IDSEARCHER_HPP
 #define IDSEARCHER_HPP
 
+#include <QMutex>
 #include <QThread>
+#include <QVector>
+#include <Core/IDResult.hpp>
 
 class IDSearcher : public QThread
 {
     Q_OBJECT
 
-signals:
-    void result(quint32, quint32);
+public:
+    IDSearcher(const QVector<quint16> &tidFilter, const QVector<quint16> &sidFilter, quint32 minDelay, quint32 maxDelay, bool infinite, quint64 maxProgress);
+    void run() override;
+    int currentProgress() const;
+    QVector<IDResult> getResults();
+
+public slots:
+    void cancelSearch();
 
 private:
     const quint32 MAG[2] = { 0, 0x9908b0df };
-    quint32 tid;
-    quint32 sid;
+    QVector<quint16> tidFilter;
+    QVector<quint16> sidFilter;
     quint32 minDelay;
     quint32 maxDelay;
-    quint64 progress;
-    quint64 maxResults;
     bool infinite;
-    bool isSearching;
-    bool cancel;
 
-public:
-    IDSearcher();
-    void run() override;
+    QVector<IDResult> results;
+    QMutex mutex;
+    bool cancel;
+    quint64 progress;
+    quint64 maxProgress;
+
     quint32 getID(quint32 seed);
-    void setTID(const quint32 &value);
-    void setSID(const quint32 &value);
-    void setMinDelay(const quint32 &value);
-    void setMaxDelay(const quint32 &value);
-    void setInfinite(bool value);
-    bool getIsSearching() const;
-    void setIsSearching(bool value);
-    bool getCancel() const;
-    void setCancel(bool value);
-    int calcProgress() const;
 
 };
 

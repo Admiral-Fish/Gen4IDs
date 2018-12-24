@@ -19,49 +19,71 @@
 
 #include "IDSearcher.hpp"
 
-IDSearcher::IDSearcher()
+IDSearcher::IDSearcher(const QVector<quint16> &tidFilter, const QVector<quint16> &sidFilter, quint32 minDelay, quint32 maxDelay, bool infinite, quint64 maxProgress)
 {
-    isSearching = false;
+    this->tidFilter = tidFilter;
+    this->sidFilter = sidFilter;
+    this->minDelay = minDelay;
+    this->maxDelay = maxDelay;
+    this->infinite = infinite;
+    this->maxProgress = maxProgress;
     cancel = false;
+    progress = 0;
 }
 
 void IDSearcher::run()
 {
-    isSearching = true;
-    cancel = false;
-    progress = 0;
-
-    if (infinite)
-        maxResults = 0x100000000;
-    else
-        maxResults = 256 * 24 * (maxDelay - minDelay);
-
     quint32 hour = infinite ? 256 : 24;
-    quint32 delay = infinite ? 0x10000 : maxDelay;
+    minDelay = infinite ? 0 : minDelay;
+    maxDelay = infinite ? 0x10000 : maxDelay;
 
     for (quint32 ab = 0; ab < 256; ab++)
     {
         for (quint32 cd = 0; cd < hour; cd++)
         {
-            for (quint32 efgh = infinite ? 0 : minDelay; efgh < delay; efgh++)
+            for (quint32 efgh = minDelay; efgh < maxDelay; efgh++)
             {
+                if (cancel)
+                {
+                    return;
+                }
+
                 quint32 seed = ((ab << 24) | (cd << 16)) + efgh;
                 quint32 id = getID(seed);
 
-                if ((id & 0xffff) == tid && (id >> 16) == sid)
-                    emit result(seed, id);
+                quint16 tid = id & 0xffff;
+                quint16 sid = id >> 16;
 
-                if (cancel)
+                if (tidFilter.contains(tid) && sidFilter.contains(sid))
                 {
-                    isSearching = false;
-                    return;
+                    IDResult result(tid, sid, seed);
+
+                    QMutexLocker locker(&mutex);
+                    results.append(result);
                 }
 
                 progress++;
             }
         }
     }
-    isSearching = false;
+}
+
+int IDSearcher::currentProgress() const
+{
+    return (progress * 100) / maxProgress;
+}
+
+QVector<IDResult> IDSearcher::getResults()
+{
+    QMutexLocker locker(&mutex);
+    auto data(results);
+    results.clear();
+    return data;
+}
+
+void IDSearcher::cancelSearch()
+{
+    cancel = true;
 }
 
 quint32 IDSearcher::getID(quint32 seed)
@@ -73,7 +95,9 @@ quint32 IDSearcher::getID(quint32 seed)
 
     quint32 s398 = s2;
     for (quint32 i = 3; i < 399; i++)
+    {
         s398 = 0x6c078965 * (s398 ^ (s398 >> 30)) + i;
+    }
 
     quint32 y = (s1 & 0x80000000) | (s2 & 0x7fffffff);
     s1 = s398 ^ (y >> 1) ^ MAG[y & 1];
@@ -84,54 +108,4 @@ quint32 IDSearcher::getID(quint32 seed)
     y ^= (y >> 18);
 
     return y;
-}
-
-void IDSearcher::setTID(const quint32 &value)
-{
-    tid = value;
-}
-
-void IDSearcher::setSID(const quint32 &value)
-{
-    sid = value;
-}
-
-void IDSearcher::setMinDelay(const quint32 &value)
-{
-    minDelay = value;
-}
-
-void IDSearcher::setMaxDelay(const quint32 &value)
-{
-    maxDelay = value;
-}
-
-void IDSearcher::setInfinite(bool value)
-{
-    infinite = value;
-}
-
-bool IDSearcher::getIsSearching() const
-{
-    return isSearching;
-}
-
-void IDSearcher::setIsSearching(bool value)
-{
-    isSearching = value;
-}
-
-bool IDSearcher::getCancel() const
-{
-    return cancel;
-}
-
-void IDSearcher::setCancel(bool value)
-{
-    cancel = value;
-}
-
-int IDSearcher::calcProgress() const
-{
-    return static_cast<int>((progress * 100) / maxResults);
 }
