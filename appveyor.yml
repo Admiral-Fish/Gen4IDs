@@ -3,8 +3,10 @@ environment:
         # Windows
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           QTDIR: C:\Qt\5.11\msvc2017_64
+          OS: windows
         # Linux
         - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+          OS: linux
 
 install:
     # Windows
@@ -38,11 +40,8 @@ artifacts:
 
 deploy:
     provider: GitHub
-    description: ''
     auth_token:
         secure: u3c5wUq11csZ77TpgKMImu9U+ibNiviMcEpTuQXmqp1YGSHA/+u5FhqZ3KRZBAQX
     artifact: Gen4IDs-%OS%.zip
-    draft: false
-    prerelease: true
     on:
         APPVEYOR_REPO_TAG: true
