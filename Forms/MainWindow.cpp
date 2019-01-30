@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    model = new IDModel(this);
+    model = new IDModel(ui->tableView);
 
     ui->textBoxMinDelay->setValues(InputType::Delay);
     ui->textBoxMaxDelay->setValues(InputType::Delay);
@@ -49,7 +49,6 @@ MainWindow::~MainWindow()
     setting.setValue("sid", ui->textEditSID->toPlainText());
 
     delete ui;
-    delete model;
 }
 
 void MainWindow::updateView(const QVector<IDResult> &frames, int progress)

@@ -53,14 +53,12 @@ void IDModel::clear()
 int IDModel::rowCount(const QModelIndex &parent) const
 {
     (void)parent;
-
     return model.size();
 }
 
 int IDModel::columnCount(const QModelIndex &parent) const
 {
     (void)parent;
-
     return 3;
 }
 
@@ -77,8 +75,6 @@ QVariant IDModel::data(const QModelIndex &index, int role) const
                 return frame.getTID();
             case 2:
                 return frame.getSID();
-            default:
-                return QVariant();
         }
     }
     return QVariant();
@@ -96,8 +92,6 @@ QVariant IDModel::headerData(int section, Qt::Orientation orientation, int role)
                 return "TID";
             case 2:
                 return "SID";
-            default:
-                return QVariant();
         }
     }
     return QVariant();
