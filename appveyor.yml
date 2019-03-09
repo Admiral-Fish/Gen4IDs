@@ -19,7 +19,7 @@ install:
     - sh: source /opt/qt5*/bin/qt5*-env.sh
     
 build_script:
-    - cmd: qmake Gen4IDs.pro
+    - qmake Gen4IDs.pro
     # Windows
     - cmd: jom -j %NUMBER_OF_PROCESSORS%
     # Linux
