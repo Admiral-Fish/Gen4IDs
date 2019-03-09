@@ -11,17 +11,18 @@ install:
 
 script:
   - qmake Gen4IDs.pro
-  - make -j 4
+  - make -j $(sysctl -n hw.physicalcpu)
 
 before_deploy:
-  - /usr/local/Cellar/qt/5.12.0/bin/macdeployqt Gen4IDs.app -dmg -verbose=2
+  - /usr/local/Cellar/qt/5.12.1/bin/macdeployqt Gen4IDs.app -dmg -verbose=2
   - zip -r Gen4IDs-macOS.zip Gen4IDs.dmg
 
 deploy:
   provider: releases
   api_key:
-    secure: bgAoKW6rgdT7HNTTEE+Q1fbmp+p40G4688EDZztM7jI+lKnfUB47eUekau0otyS2Y/Nk2VHX4gaPSu8WNnhpmAwZPzDsnBXWTw7fijt3Z6pfAwPqxVWAeD9xqP5ShLa/hJ/L02tMV4tgfQQDiPcfJrxd9O2TB6SbYiw+ql6ez09ZK8k3PzrhMybpPLE0qu8VsDgg75RM6vUSohEE0SPdNO6MIPSTVOqOAwyRBUzsMmDRn9O8QwKk/spE4gvvApYAnpYJ1x3Lyo1GhVDSvj5AphOG7q2zrugTarEavDDhWbaaGFErmsUdmrkFPdLQ/wWiaowBEnm4DzfpaxztmGZeNJTsX60xdqiY1DnFQRguWWC654/WMGCoCCPl0MV4xZhDSlOCrfP1tve4diRpG2mlqy/McFmB58O2cc0yCrAP+KfZiztxXAFfK2rsu2BYVE5SjF2rq3d1xj4Mo6e2FywGJhXMxSLTxTfloYXEMxRvkaL0FJPlv8zMUt+7uNA6QHtAKOHTN398qsxJzXUpPYBeLpz6Mree/QPI++ilgnDDjawYea7PLB+IbVmFb8QR69oYW4b15RrO++K7FSx8dWu222jLW/SEBaeZlWu7ol8GtStPTy6uRY6i01l0KQdAza8JFnBcyd8NG+P4EWZ27YnzfScEArnSMU+7BeA0LCwY6x8=
-  file: Gen4IDs-macOS.zip
+    secure: HEeoNmgC6cDkb87dQXGr4KqEVRCj4dPgK7HALMuUT1p9IXBbB1sC1hhKjtKNAJhc9yEH6LqSLGNtXSOfoxRsZnmd+JovJLEaFlC/66GqEzdtPoz22i9ilEbvpv1dmsvsg/4By2ZJvQtf5vDlZrXEEhCUCP4ntk3qmCUpwvzwiiR38kPllSqXNYWrE9Om+cZIib8QxaqjPbbUJaDsN4aXhnJ9KWhTQ0lNgn6/JhdESkPmbSOHbr7PcHGcXQIaaHFEGwjW1/DL9iymXAPbwm61gQ5NJs/U//0LqJiLhPwD3hNyuC2ns6bfg/PETpuqjIFxoDnIaVEfkTSn4Oo0ltCMDuKV+1oQl0IRx6RuYajjPAa0L1VMlWwGTeO/kn9dBWKAnEweJbAAchalcpypSzpmQPTKudRu3rx3Z2rSo402zRslLsy9gXWlOg5ZIHX1Ijj2hQ1flHQB74L4dnalmfjnRJQVWGhFZiCdQ3+WaD26n8dTZQ+Wf9WKZnZJSVJH1pQuj9jgUAjPZBwIIuEMCMGf+d8NE7QXbWuKcvuY7DKfHrhdBF0Y5U5QZBMqit7Gf45laO4P1WWikKemYV/SOIbHXSmx/TPVEeWhxBdq9+V+jTrp1/o/B/zpsAyNmhI6c6nk+QZN9U+Q0BNGi4FiZgvZcqPPkIkN9CeZHBJggLjb0GQ=
+  file: "Gen4IDs-macOS.zip"
   skip_cleanup: true
   on:
+    repo: Admiral-Fish/Gen3IDs
     tags: true
