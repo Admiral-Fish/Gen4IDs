@@ -35,7 +35,6 @@ namespace Ui
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
@@ -47,8 +46,7 @@ private:
     void updateView(const QVector<IDResult> &frames, int progress);
 
 private slots:
-    void on_pushButtonSearch_clicked();
-
+    void search();
 };
 
 #endif // MAINWINDOW_HPP

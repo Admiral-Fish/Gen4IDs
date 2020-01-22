@@ -26,7 +26,6 @@
 class IDModel : public QAbstractTableModel
 {
     Q_OBJECT
-
 public:
     explicit IDModel(QObject *parent = nullptr);
     void addItems(const QVector<IDResult> &frames);
@@ -38,7 +37,6 @@ public:
 
 private:
     QVector<IDResult> model;
-
 };
 
 #endif // IDMODEL_HPP

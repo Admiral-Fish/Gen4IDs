@@ -19,24 +19,21 @@
 
 #include "IDResult.hpp"
 
-IDResult::IDResult(quint16 tid, quint16 sid, quint32 seed)
+IDResult::IDResult(uint16_t tid, uint16_t sid, uint32_t seed) : tid(tid), sid(sid), seed(seed)
 {
-    this->tid = tid;
-    this->sid = sid;
-    this->seed = seed;
 }
 
-quint16 IDResult::getTID() const
+uint16_t IDResult::getTID() const
 {
     return tid;
 }
 
-quint16 IDResult::getSID() const
+uint16_t IDResult::getSID() const
 {
     return sid;
 }
 
-quint32 IDResult::getSeed() const
+uint32_t IDResult::getSeed() const
 {
     return seed;
 }

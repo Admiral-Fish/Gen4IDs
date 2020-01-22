@@ -28,9 +28,9 @@
 class IDSearcher : public QThread
 {
     Q_OBJECT
-
 public:
-    IDSearcher(const QVector<quint16> &tidFilter, const QVector<quint16> &sidFilter, quint32 minDelay, quint32 maxDelay, bool infinite, quint64 maxProgress);
+    IDSearcher(const QVector<uint16_t> &tidFilter, const QVector<uint16_t> &sidFilter, uint32_t minDelay, uint32_t maxDelay, bool infinite,
+               uint64_t maxProgress);
     void run() override;
     int currentProgress() const;
     QVector<IDResult> getResults();
@@ -39,21 +39,19 @@ public slots:
     void cancelSearch();
 
 private:
-    const quint32 MAG[2] = { 0, 0x9908b0df };
-    QVector<quint16> tidFilter;
-    QVector<quint16> sidFilter;
-    quint32 minDelay;
-    quint32 maxDelay;
+    QVector<uint16_t> tidFilter;
+    QVector<uint16_t> sidFilter;
+    uint32_t minDelay;
+    uint32_t maxDelay;
     bool infinite;
 
     QVector<IDResult> results;
     QMutex mutex;
     bool cancel;
-    quint64 progress;
-    quint64 maxProgress;
+    uint64_t progress;
+    uint64_t maxProgress;
 
-    quint32 getID(quint32 seed);
-
+    uint32_t getID(uint32_t seed);
 };
 
 #endif // IDSEARCHER_HPP

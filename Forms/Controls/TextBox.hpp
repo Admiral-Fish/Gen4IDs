@@ -40,18 +40,19 @@ class TextBox : public QLineEdit
 public:
     TextBox(QWidget *parent = nullptr);
     void setValues(InputType type);
-    void setValues(quint64 minValue, quint64 maxValue, int base = 10);
+    void setValues(uint64_t minValue, uint64_t maxValue, int length, int base = 10);
 
 private:
-    quint64 maxValue = 0;
-    quint64 minValue;
+    uint64_t maxValue;
+    uint64_t minValue;
     int base;
+    int length;
     QRegExp filter;
     bool setup;
 
 private slots:
-    void onTextChanged(QString string);
-
+    void onTextEdited(QString string);
+    void onEditFinished();
 };
 
 #endif // TEXTBOX_HPP

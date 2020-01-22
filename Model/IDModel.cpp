@@ -66,7 +66,7 @@ QVariant IDModel::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole)
     {
-        auto frame = model.at(index.row());
+        const auto &frame = model.at(index.row());
         switch (index.column())
         {
             case 0:

@@ -25,19 +25,33 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     model = new IDModel(ui->tableView);
+    ui->tableView->setModel(model);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->textBoxMinDelay->setValues(InputType::Delay);
     ui->textBoxMaxDelay->setValues(InputType::Delay);
 
-    ui->tableView->setModel(model);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    connect(ui->pushButtonSearch, &QPushButton::clicked, this, &MainWindow::search);
 
     QSettings setting;
-    if (setting.contains("minDelay")) ui->textBoxMinDelay->setText(setting.value("minDelay").toString());
-    if (setting.contains("maxDelay")) ui->textBoxMaxDelay->setText(setting.value("maxDelay").toString());
-    if (setting.contains("tid")) ui->textEditTID->setText(setting.value("tid").toString());
-    if (setting.contains("sid")) ui->textEditSID->setText(setting.value("sid").toString());
+    if (setting.contains("minDelay"))
+    {
+        ui->textBoxMinDelay->setText(setting.value("minDelay").toString());
+    }
+    if (setting.contains("maxDelay"))
+    {
+        ui->textBoxMaxDelay->setText(setting.value("maxDelay").toString());
+    }
+    if (setting.contains("tid"))
+    {
+        ui->textEditTID->setText(setting.value("tid").toString());
+    }
+    if (setting.contains("sid"))
+    {
+        ui->textEditSID->setText(setting.value("sid").toString());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -57,7 +71,7 @@ void MainWindow::updateView(const QVector<IDResult> &frames, int progress)
     ui->progressBar->setValue(progress);
 }
 
-void MainWindow::on_pushButtonSearch_clicked()
+void MainWindow::search()
 {
     model->clear();
     ui->pushButtonSearch->setEnabled(false);
@@ -66,16 +80,16 @@ void MainWindow::on_pushButtonSearch_clicked()
     bool flag = ui->checkBoxInfiniteSearch->isChecked();
     QStringList tid = ui->textEditTID->toPlainText().split("\n");
     QStringList sid = ui->textEditSID->toPlainText().split("\n");
-    quint32 minDelay = ui->textBoxMinDelay->text().toUInt();
-    quint32 maxDelay = ui->textBoxMaxDelay->text().toUInt();
+    uint32_t minDelay = ui->textBoxMinDelay->text().toUInt();
+    uint32_t maxDelay = ui->textBoxMaxDelay->text().toUInt();
 
-    QVector<quint16> tidFilter;
+    QVector<uint16_t> tidFilter;
     for (const auto &str : tid)
     {
         tidFilter.append(str.toUShort());
     }
 
-    QVector<quint16> sidFilter;
+    QVector<uint16_t> sidFilter;
     for (const auto &str : sid)
     {
         sidFilter.append(str.toUShort());
@@ -89,20 +103,23 @@ void MainWindow::on_pushButtonSearch_clicked()
         return;
     }
 
-    quint64 maxProgress;
+    uint64_t maxProgress;
     maxProgress = flag ? 0x100000000 : 256 * 24 * (maxDelay - minDelay);
 
     ui->progressBar->setValue(0);
 
     auto *search = new IDSearcher(tidFilter, sidFilter, minDelay, maxDelay, flag, maxProgress);
-    auto *timer = new QTimer();
+    connect(search, &IDSearcher::finished, this, [=] {
+        ui->pushButtonSearch->setEnabled(true);
+        ui->pushButtonCancel->setEnabled(false);
+        updateView(search->getResults(), search->currentProgress());
+    });
+    connect(ui->pushButtonCancel, &QPushButton::clicked, search, &IDSearcher::cancelSearch);
 
+    auto *timer = new QTimer();
     connect(search, &IDSearcher::finished, timer, &QTimer::deleteLater);
     connect(search, &IDSearcher::finished, timer, &QTimer::stop);
-    connect(search, &IDSearcher::finished, this, [ = ] { ui->pushButtonSearch->setEnabled(true); ui->pushButtonCancel->setEnabled(false); });
-    connect(search, &IDSearcher::finished, this, [ = ] { updateView(search->getResults(), search->currentProgress()); });
-    connect(timer, &QTimer::timeout, this, [ = ] { updateView(search->getResults(), search->currentProgress()); });
-    connect(ui->pushButtonCancel, &QPushButton::clicked, search, &IDSearcher::cancelSearch);
+    connect(timer, &QTimer::timeout, this, [=] { updateView(search->getResults(), search->currentProgress()); });
 
     search->start();
     timer->start(1000);

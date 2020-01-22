@@ -20,23 +20,21 @@
 #ifndef IDRESULT_HPP
 #define IDRESULT_HPP
 
-#include <QtGlobal>
+#include <cstdint>
 
 class IDResult
 {
-
 public:
     IDResult() = default;
-    IDResult(quint16 tid, quint16 sid, quint32 seed);
-    quint16 getTID() const;
-    quint16 getSID() const;
-    quint32 getSeed() const;
+    IDResult(uint16_t tid, uint16_t sid, uint32_t seed);
+    uint16_t getTID() const;
+    uint16_t getSID() const;
+    uint32_t getSeed() const;
 
 private:
-    quint16 tid;
-    quint16 sid;
-    quint32 seed;
-
+    uint16_t tid;
+    uint16_t sid;
+    uint32_t seed;
 };
 
 #endif // IDRESULT_HPP

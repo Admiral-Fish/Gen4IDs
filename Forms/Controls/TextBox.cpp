@@ -19,85 +19,107 @@
 
 #include "TextBox.hpp"
 
-TextBox::TextBox(QWidget *parent) : QLineEdit(parent)
+TextBox::TextBox(QWidget *parent) : QLineEdit(parent), setup(false)
 {
-    connect(this, &TextBox::textChanged, this, &TextBox::onTextChanged);
-    setup = false;
+    connect(this, &TextBox::textEdited, this, &TextBox::onTextEdited);
+    connect(this, &TextBox::editingFinished, this, &TextBox::onEditFinished);
 }
 
 void TextBox::setValues(InputType type)
 {
     switch (type)
     {
-        case InputType::Seed64Bit:
-            minValue = 0;
-            maxValue = 0xffffffffffffffff;
-            base = 16;
-            break;
-        case InputType::Frame64Bit:
-            minValue = 1;
-            maxValue = 0xffffffffffffffff;
-            base = 10;
-            break;
-        case InputType::Seed32Bit:
-            minValue = 0;
-            maxValue = 0xffffffff;
-            base = 16;
-            break;
-        case InputType::Frame32Bit:
-            minValue = 1;
-            maxValue = 0xffffffff;
-            base = 10;
-            break;
-        case InputType::Seed16Bit:
-            minValue = 0;
-            maxValue = 0xffff;
-            base = 16;
-            break;
-        case InputType::Delay:
-            minValue = 0;
-            maxValue = 0xffffffff;
-            base = 10;
-            break;
-        case InputType::TIDSID:
-            minValue = 0;
-            maxValue = 0xffff;
-            base = 10;
-            break;
+    case InputType::Seed64Bit:
+        minValue = 0;
+        maxValue = 0xffffffffffffffff;
+        length = 16;
+        base = 16;
+        break;
+    case InputType::Frame64Bit:
+        minValue = 1;
+        maxValue = 0xffffffffffffffff;
+        length = 20;
+        base = 10;
+        break;
+    case InputType::Seed32Bit:
+        minValue = 0;
+        maxValue = 0xffffffff;
+        length = 8;
+        base = 16;
+        break;
+    case InputType::Frame32Bit:
+        minValue = 1;
+        maxValue = 0xffffffff;
+        length = 10;
+        base = 10;
+        break;
+    case InputType::Seed16Bit:
+        minValue = 0;
+        maxValue = 0xffff;
+        length = 4;
+        base = 16;
+        break;
+    case InputType::Delay:
+        minValue = 0;
+        maxValue = 0xffffffff;
+        length = 10;
+        base = 10;
+        break;
+    case InputType::TIDSID:
+        minValue = 0;
+        maxValue = 0xffff;
+        length = 5;
+        base = 10;
+        break;
     }
 
     filter = QRegExp(base == 10 ? "[^0-9]" : "[^0-9A-F]");
     setup = true;
 }
 
-void TextBox::setValues(quint64 minValue, quint64 maxValue, int base)
+void TextBox::setValues(quint64 minValue, quint64 maxValue, int length, int base)
 {
     this->minValue = minValue;
     this->maxValue = maxValue;
+    this->length = length;
     this->base = base;
     filter = QRegExp(base == 10 ? "[^0-9]" : "[^0-9A-F]");
     setup = true;
 }
 
-void TextBox::onTextChanged(QString string)
+void TextBox::onTextEdited(QString string)
 {
     if (setup)
     {
+        // Allow hex formatted strings
+        if (base == 16 && string.startsWith("0x"))
+        {
+            string.remove(0, 2);
+        }
+
+        // Length limit
+        string.chop(string.length() - length);
+
+        // Apply regex filter
         string = string.toUpper();
         string.remove(filter);
-        quint64 temp = string.toULongLong(nullptr, base);
 
-        if (temp > maxValue)
-        {
-            string = QString::number(maxValue, base);
-        }
-        if (temp < minValue)
-        {
-            string = QString::number(minValue, base);
-        }
+        int position = this->cursorPosition();
+        this->setText(string);
+        this->setCursorPosition(position);
+    }
+}
 
-        int position = cursorPosition();
+void TextBox::onEditFinished()
+{
+    if (setup)
+    {
+        QString string = this->text();
+
+        uint64_t value = string.toULongLong(nullptr, base);
+        value = qBound(minValue, value, maxValue);
+
+        string = QString::number(value, base);
         setText(string);
-        setCursorPosition(position);
     }
 }
