@@ -14,13 +14,13 @@ script:
   - make -j $(sysctl -n hw.physicalcpu)
 
 before_deploy:
-  - /usr/local/Cellar/qt/5.12.1/bin/macdeployqt Gen4IDs.app -dmg -verbose=2
+  - /usr/local/Cellar/qt/5.13.2/bin/macdeployqt Gen4IDs.app -dmg -verbose=2
   - zip -r Gen4IDs-macOS.zip Gen4IDs.dmg
 
 deploy:
   provider: releases
   api_key:
-    secure: HEeoNmgC6cDkb87dQXGr4KqEVRCj4dPgK7HALMuUT1p9IXBbB1sC1hhKjtKNAJhc9yEH6LqSLGNtXSOfoxRsZnmd+JovJLEaFlC/66GqEzdtPoz22i9ilEbvpv1dmsvsg/4By2ZJvQtf5vDlZrXEEhCUCP4ntk3qmCUpwvzwiiR38kPllSqXNYWrE9Om+cZIib8QxaqjPbbUJaDsN4aXhnJ9KWhTQ0lNgn6/JhdESkPmbSOHbr7PcHGcXQIaaHFEGwjW1/DL9iymXAPbwm61gQ5NJs/U//0LqJiLhPwD3hNyuC2ns6bfg/PETpuqjIFxoDnIaVEfkTSn4Oo0ltCMDuKV+1oQl0IRx6RuYajjPAa0L1VMlWwGTeO/kn9dBWKAnEweJbAAchalcpypSzpmQPTKudRu3rx3Z2rSo402zRslLsy9gXWlOg5ZIHX1Ijj2hQ1flHQB74L4dnalmfjnRJQVWGhFZiCdQ3+WaD26n8dTZQ+Wf9WKZnZJSVJH1pQuj9jgUAjPZBwIIuEMCMGf+d8NE7QXbWuKcvuY7DKfHrhdBF0Y5U5QZBMqit7Gf45laO4P1WWikKemYV/SOIbHXSmx/TPVEeWhxBdq9+V+jTrp1/o/B/zpsAyNmhI6c6nk+QZN9U+Q0BNGi4FiZgvZcqPPkIkN9CeZHBJggLjb0GQ=
+    secure: zq7riFPVWmkiVLczsXj7RTyuElDb3QoppIOWN6/OGviAcnZ+8WDePeNcZ9zaULnl6iwVf/hnKcckxbNzZdETHBM7ikCR3LQ8VXCth7GovcbrkMlrOuslZOEDfF+S5uSU7UNHWdlx2H6jtOSlOhvroPzwkXdyBt9DrCkz00CU41+ZNaczF5A+1gHPdHfYnO0gyoSOFalqde/F2scsjqE4kBB8e29YVCdpZAX54YVU62l2QPy/texELWPT0mTv72/VXRizzJ63zA3enxaiZ5UbQvI/C4ZCE4NztKcRun4qU4M2nQJz/H0w58H4YLlbf97XLtLrv2t7b3vvp2kjzNGPq33SHZEpESkuauX7AzhveAWc19v9Zt6Kjn3NrlywERDfoulyX6q6TsQw0982D7fGQczyeQXMiVF18tGrSvDkt42jeoQ1rdrYTp/u/S83OYynTsPclNB/nfUwefgqjpLYynVamJI0/B8FIQGmHKVEN+MOYlSgT9lqbKrcD/QR3XtxPIyV9Z68a6x37u75Js4Gu9op8hor0bvKSefShyT2hq3jIIda26J45lXtHHtX5Lq8gdt7FtY09km3odNNgdUumB4QJiCQgOnoGdJzpL+wyW9dU+atEBSId4ephSKfEmJZlJJadExEzOYnEN5gvZuQpaI7JZUlvSsavfZh7ipcbd4=
   file: "Gen4IDs-macOS.zip"
   skip_cleanup: true
   on:
