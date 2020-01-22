@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle(QString("Gen 4 IDs %1").arg(VERSION));
 
     model = new IDModel(ui->tableView);
     ui->tableView->setModel(model);

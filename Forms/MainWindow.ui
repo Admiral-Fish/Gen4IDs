@@ -16,9 +16,6 @@
     <height>390</height>
    </size>
   </property>
-  <property name="windowTitle">
-   <string>Gen 4 IDs</string>
-  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">

@@ -1,16 +1,22 @@
 environment:
-    matrix:
-        # Windows
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-          QTDIR: C:\Qt\5.14\msvc2017_64
-          OS: windows
-          VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
-          VCVARSALL: x64
-        # Linux
-        - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-          OS: linux
+  matrix:
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    QTPATH: C:\Qt\5.14\msvc2017_64
+    OS: win64
+    VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+    VCVARSALL: x64
+  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    OS: linux
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    QTPATH: C:\Qt\5.14\msvc2017
+    OS: win32
+    VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+    VCVARSALL: x86
 
 install:
+    - git submodule update --init --recursive    
+    
+before_build:
     # Windows
     - cmd: set PATH=%QTPATH%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
     - cmd: call %VCVARSALLPATH% %VCVARSALL%
@@ -24,22 +30,24 @@ build_script:
     - cmd: jom -j %NUMBER_OF_PROCESSORS%
     # Linux
     - sh: make -j $(nproc)
-
+    
 after_build:
     # Windows
     - cmd: md Gen4IDs-windows
-    - cmd: move release\Gen4IDs.exe Gen4IDs-windows\Gen4IDs.exe 
+    - cmd: move release\Gen4IDs.exe Gen4IDs-windows\Gen4IDs.exe
     - cmd: windeployqt --release --no-translations --no-angle --no-plugins --no-opengl-sw Gen4IDs-windows\Gen4IDs.exe
-    - cmd: xcopy /I %QTDIR%\plugins\platforms\qwindows.dll Gen4IDs-windows\platforms\
-    - cmd: 7z a Gen4IDs-windows.zip Gen4IDs-windows\
+    - cmd: xcopy /I %QTPATH%\plugins\platforms\qwindows.dll Gen4IDs-windows\platforms\
+    - cmd: xcopy /I %QTPATH%\plugins\styles\qwindowsvistastyle.dll Gen4IDs-windows\styles\
+    - cmd: 7z a Gen4IDs-%OS%.zip Gen4IDs-windows\
     # Linux
-    - sh: zip -r Gen4IDs-linux.zip Gen4IDs
+    - sh: zip Gen4IDs-linux.zip Gen4IDs
     
 artifacts:
-    - path: Gen4IDs-%OS%.zip
+- path: Gen4IDs-%OS%.zip
 
 deploy:
     provider: GitHub
+    description: ''
     auth_token:
         secure: u3c5wUq11csZ77TpgKMImu9U+ibNiviMcEpTuQXmqp1YGSHA/+u5FhqZ3KRZBAQX
     artifact: Gen4IDs-%OS%.zip
