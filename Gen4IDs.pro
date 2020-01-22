@@ -1,12 +1,12 @@
 QT += widgets
+CONFIG += c++1z
 
 TARGET = Gen4IDs
 TEMPLATE = app
 VERSION = 2.0.0
 
+DEFINES += VERSION=\\\"$$VERSION\\\"
 DEFINES += QT_DEPRECATED_WARNINGS
-
-CONFIG += c++1z
 
 FORMS += \
     Forms/MainWindow.ui

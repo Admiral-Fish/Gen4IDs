@@ -4,14 +4,16 @@ environment:
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
           QTDIR: C:\Qt\5.14\msvc2017_64
           OS: windows
+          VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+          VCVARSALL: x64
         # Linux
         - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
           OS: linux
 
 install:
     # Windows
-    - cmd: set PATH=%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
-    - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    - cmd: set PATH=%QTPATH%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
+    - cmd: call %VCVARSALLPATH% %VCVARSALL%
     # Linux
     - sh: sudo apt-get -qq update
     - sh: sudo apt-get install -y build-essential qtbase5-dev qt5-qmake qt5-default

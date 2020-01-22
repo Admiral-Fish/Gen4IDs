@@ -1,6 +1,6 @@
 /*
  * This file is part of Gen4IDs
- * Copyright (C) 2018 by Admiral_Fish
+ * Copyright (C) 2018-2020 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,7 +77,7 @@ void TextBox::setValues(InputType type)
     setup = true;
 }
 
-void TextBox::setValues(quint64 minValue, quint64 maxValue, int length, int base)
+void TextBox::setValues(uint64_t minValue, uint64_t maxValue, int length, int base)
 {
     this->minValue = minValue;
     this->maxValue = maxValue;

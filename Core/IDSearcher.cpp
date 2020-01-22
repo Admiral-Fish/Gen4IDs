@@ -1,6 +1,6 @@
 /*
  * This file is part of Gen4IDs
- * Copyright (C) 2018 by Admiral_Fish
+ * Copyright (C) 2018-2020 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +21,8 @@
 
 constexpr quint32 MAG[2] = { 0, 0x9908b0df };
 
-IDSearcher::IDSearcher(const QVector<quint16> &tidFilter, const QVector<quint16> &sidFilter, quint32 minDelay, quint32 maxDelay,
-                       bool infinite, quint64 maxProgress) :
+IDSearcher::IDSearcher(const QVector<uint16_t> &tidFilter, const QVector<uint16_t> &sidFilter, uint32_t minDelay, uint32_t maxDelay,
+                       bool infinite, uint64_t maxProgress) :
     tidFilter(tidFilter),
     sidFilter(sidFilter),
     minDelay(minDelay),

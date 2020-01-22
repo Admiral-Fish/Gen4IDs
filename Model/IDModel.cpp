@@ -1,6 +1,6 @@
 /*
  * This file is part of Gen4IDs
- * Copyright (C) 2018 by Admiral_Fish
+ * Copyright (C) 2018-2020 by Admiral_Fish
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
