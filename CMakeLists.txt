@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16.0)
 
-project(Gen4ID VERSION 2.0.0 LANGUAGES CXX)
+project(Gen4IDs VERSION 2.0.0 LANGUAGES CXX)
 add_compile_definitions(VERSION="2.0.0")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -28,22 +28,22 @@ set(PROJECT_SOURCES
 )
 
 if (WIN32)
-    add_executable(Gen4ID
+    add_executable(Gen4IDs
         WIN32
         ${PROJECT_UI}
         ${PROJECT_SOURCES}
     )
 elseif (APPLE)
-    add_executable(Gen4ID
+    add_executable(Gen4IDs
         MACOSX_BUNDLE
         ${PROJECT_UI}
         ${PROJECT_SOURCES}
     )
 else ()
-    add_executable(Gen4ID
+    add_executable(Gen4IDs
         ${PROJECT_UI}
         ${PROJECT_SOURCES}
     )
 endif ()
 
-target_link_libraries(Gen4ID PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(Gen4IDs PRIVATE Qt6::Core Qt6::Widgets)
