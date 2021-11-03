@@ -3,13 +3,10 @@
 case $OS in
   linux)
   {
-    source /opt/qt5*/bin/qt5*-env.sh
-    qmake Gen4IDs.pro
-    make -j $(nproc)
+    cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_PREFIX_PATH=$HOME/Qt/6.1/gcc_64 -DTEST=ON ../ 
   } ;;  
   macOS)
   {
-    qmake Gen4IDs.pro
-    make -j $(sysctl -n hw.physicalcpu)
+	  PATH=$PATH:$HOME/Qt/6.1/macos/bin cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DTEST=ON ../
   } ;;
 esac

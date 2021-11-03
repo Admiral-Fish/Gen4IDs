@@ -1,53 +1,49 @@
 environment:
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    QTPATH: C:\Qt\5.14\msvc2017_64
+    QTPATH: C:\Qt\5.15\msvc2019_64
     OS: win64
-    VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
-    VCVARSALL: x64
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    QTPATH: C:\Qt\5.14\msvc2017
-    OS: win32
-    VCVARSALLPATH: C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
-    VCVARSALL: x86
-  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu1804
+  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
     OS: linux
   - APPVEYOR_BUILD_WORKER_IMAGE: macos
     OS: macOS
 
 install:
-    - git submodule update --init --recursive
-    - sh: bash .ci/install.sh
-    
+  - git submodule update --init --recursive
+  - sh: bash .ci/install.sh
+
 before_build:
-    - cmd: set PATH=%QTPATH%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
-    - cmd: call %VCVARSALLPATH% %VCVARSALL%
-    
+  - cmd: set PATH=%QTPATH%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
+  - cmd: call C:\"Program Files (x86)\Microsoft Visual Studio"\2019\Community\VC\Auxiliary\Build\vcvarsall.bat x64
+
 build_script:
-    - cmd: qmake Gen4IDs.pro
-    - cmd: jom -j %NUMBER_OF_PROCESSORS%
-    - sh: bash .ci/build.sh
-    
+  - mkdir build
+  - cd build
+  - cmd: cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=RELEASE ../
+  - sh: bash ../.ci/build.sh
+  - cmake --build . -j 4
+
 after_build:
-    - cmd: md Gen4IDs-windows
-    - cmd: move release\Gen4IDs.exe Gen4IDs-windows\Gen4IDs.exe 
-    - cmd: windeployqt --release --no-translations --no-angle --no-plugins --no-opengl-sw Gen4IDs-windows\Gen4IDs.exe
-    - cmd: del Gen4IDs-windows\vc_redist*.exe
-    - cmd: xcopy /I %QTPATH%\plugins\platforms\qwindows.dll Gen4IDs-windows\platforms\
-    - cmd: xcopy /I %QTPATH%\plugins\styles\qwindowsvistastyle.dll Gen4IDs-windows\styles\
-    - cmd: 7z a Gen4IDs-%OS%.zip Gen4IDs-windows\
-    - cmd: sha256sum Gen4IDs-%OS%.zip > Gen4IDs-%OS%.zip.sha256
-    - sh: bash .ci/after_build.sh
-    
+  - cd ..
+  - cmd: md Gen4IDs-windows
+  - cmd: move build\release\Gen4IDs.exe Gen4IDs-windows\Gen4IDs.exe 
+  - cmd: windeployqt --no-translations --no-plugins --no-opengl-sw --no-system-d3d-compiler Gen4IDs-windows\Gen4IDs.exe
+  - cmd: del Gen4IDs-windows\vc_redist*.exe
+  - cmd: xcopy /I %QTPATH%\plugins\platforms\qwindows.dll Gen4IDs-windows\platforms\
+  - cmd: xcopy /I %QTPATH%\plugins\styles\qwindowsvistastyle.dll Gen4IDs-windows\styles\
+  - cmd: 7z a Gen4IDs-%OS%.zip Gen4IDs-windows\
+  - cmd: sha256sum Gen4IDs-%OS%.zip > Gen4IDs-%OS%.zip.sha256
+  - sh: bash .ci/after_build.sh
+
 artifacts:
-- path: Gen4IDs-%OS%.zip
-- path: Gen4IDs-%OS%.zip.sha256
+  - path: Gen4IDs-%OS%.zip
+  - path: Gen4IDs-%OS%.zip.sha256
 
 deploy:
-    provider: GitHub
-    description: ''
-    auth_token:
-        secure: u3c5wUq11csZ77TpgKMImu9U+ibNiviMcEpTuQXmqp1YGSHA/+u5FhqZ3KRZBAQX
-    artifact: Gen4IDs-%OS%.zip,Gen4IDs-%OS%.zip.sha256
-    on:
-        APPVEYOR_REPO_TAG: true
+  provider: GitHub
+  description: ''
+  auth_token:
+    secure: u3c5wUq11csZ77TpgKMImu9U+ibNiviMcEpTuQXmqp1YGSHA/+u5FhqZ3KRZBAQX
+  artifact: Gen4IDs-%OS%.zip,Gen4IDs-%OS%.zip.sha256
+  on:
+    APPVEYOR_REPO_TAG: true

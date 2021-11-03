@@ -21,6 +21,7 @@
 #define TEXTBOX_HPP
 
 #include <QLineEdit>
+#include <QRegularExpression>
 
 enum InputType
 {
@@ -47,7 +48,7 @@ private:
     uint64_t minValue;
     int base;
     int length;
-    QRegExp filter;
+    QRegularExpression filter;
     bool setup;
 
 private slots:
