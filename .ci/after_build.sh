@@ -3,15 +3,15 @@
 case $OS in
   linux)
   {
-    mv build/Source/Forms/Gen4IDs .
-    zip -r Gen4IDs-linux.zip Gen4IDs
-    sha256sum Gen4IDs-linux.zip > Gen4IDs-linux.zip.sha256
+    mv build/Source/Forms/Gen4ID .
+    zip -r Gen4ID-linux.zip Gen4ID
+    sha256sum Gen4ID-linux.zip > Gen4ID-linux.zip.sha256
   } ;;  
   macOS)
   {
-    mv build/Source/Forms/Gen4IDs.app .
-    PATH=$PATH:$HOME/Qt/6.1/macos/bin macdeployqt Gen4IDs.app -dmg -verbose=2
-    zip -r Gen4IDs-macOS.zip Gen4IDs.dmg
-    shasum -a 256 Gen4IDs-macOS.zip > Gen4IDs-macOS.zip.sha256
+    mv build/Source/Forms/Gen4ID.app .
+    PATH=$PATH:$HOME/Qt/6.1/macos/bin macdeployqt Gen4ID.app -dmg -verbose=2
+    zip -r Gen4ID-macOS.zip Gen4ID.dmg
+    shasum -a 256 Gen4ID-macOS.zip > Gen4ID-macOS.zip.sha256
   } ;;
 esac
