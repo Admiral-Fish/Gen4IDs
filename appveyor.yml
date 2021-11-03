@@ -1,7 +1,7 @@
 environment:
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    QTPATH: C:\Qt\5.15\msvc2019_64
+    QTPATH: C:\Qt\6.2\msvc2019_64
     OS: win64
   - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
     OS: linux
