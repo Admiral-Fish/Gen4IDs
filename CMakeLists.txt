@@ -18,7 +18,7 @@ set(PROJECT_UI
     Forms/MainWindow.ui
 )
 
-set(PROJECT_SOURCES  
+set(PROJECT_SOURCES
     Core/IDResult.cpp
     Core/IDSearcher.cpp
     Forms/Controls/TextBox.cpp
